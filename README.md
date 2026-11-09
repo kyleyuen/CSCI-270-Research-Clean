@@ -14,7 +14,18 @@ Base: [openvenues/libpostal](https://github.com/openvenues/libpostal) at commit 
 
 Most changes sit behind `EXP_*` compile switches (`build/BUILD_SWITCHES.txt`).
 
-`build/` holds the build recipe: `BUILD.md`, `BUILD_SWITCHES.txt`, `build_cc.sh`, and checksums for the sources (`SOURCE_MANIFEST.sha256`) and model files (`MODEL_FILES.sha256`). `build_cc.sh` has hard-coded paths from the original workspace, so treat it as a recipe, not a script to run as-is.
+`harness/` holds the three small test programs (`dump_outputs.c`, `bench_ext.c`, `fuzz_pipeline.c`).
+
+`build/` holds the build: `build.sh` (builds original and optimized side by side), `compare.sh` (checks byte-identical output), the PGO profile `dev.profdata`, and checksums for the sources (`SOURCE_MANIFEST.sha256`) and model files (`MODEL_FILES.sha256`). `BUILD.md`, `BUILD_SWITCHES.txt` and `build_cc.sh` are the original build record; `build_cc.sh` has hard-coded paths from the old workspace, so use `build.sh` instead.
+
+## Run it
+
+Needs macOS on Apple Silicon, clang, autotools and `brew install mimalloc`, plus the libpostal v1.0.0 model data.
+
+```sh
+build/build.sh /path/to/libpostal-model-data /path/to/work-dir   # clones upstream at the pinned commit, builds both
+build/compare.sh /path/to/work-dir addresses.txt                 # PASS = byte-identical output
+```
 
 Check the sources: `shasum -a 256 -c build/SOURCE_MANIFEST.sha256`
 
